@@ -1,0 +1,12 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "~5.0",
+        "react/react": "0.4.*"
+    },
+     "autoload": {
+		"psr-0": {
+			"PhpCoap": "PhpCoap/src/"
+		},
+		"files": ["PhpCoap/src/PhpCoap/functions.php"]
+	}
+}

@@ -1,0 +1,3 @@
+[submodule "PhpCoap"]
+	path = PhpCoap
+	url = https://github.com/cquijano/PhpCoap.git
