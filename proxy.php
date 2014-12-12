@@ -53,7 +53,6 @@ function coap2NGSI($coap_req){
 }
 function send2NGSI ($data){
 	$http_client = new GuzzleHttp\Client();
-	var_dump($data);
 	try{
 		$response = $http_client->post(SERVER , 
 			[
