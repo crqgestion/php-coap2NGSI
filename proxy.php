@@ -32,7 +32,7 @@ function Options2ID($opts){
 	$id_opt=(end($opts));
 	return ($id_opt->getValue());
 }
-function coap2NGSI($coap_req){
+function coap2NGSI_str($coap_req){
 	$_ngsi=json_decode($coap_req->getPayload());
 	$atributes=data2atributes($_ngsi->data);
 	$id=Options2ID($coap_req->GetOptions());
@@ -51,12 +51,12 @@ function coap2NGSI($coap_req){
 
 	return (json_decode($obj));/*As string*/
 }
-function send2NGSI ($data){
+function send2NGSI ($data_str){
 	$http_client = new GuzzleHttp\Client();
 	try{
 		$response = $http_client->post(SERVER , 
 			[
-				'json' => ($data),
+				'body' => json_encode($data_str),
 				'headers' => ['Accept' => 'application/json', 'Content-Type' => 'application/json']
 			]
 		);
@@ -73,10 +73,10 @@ $server = new PhpCoap\Server\Server( $loop );
 $server->receive( 5683, '[::]' );
 
 $server->on( 'request', function( $req, $res, $handler ) {
-	$ngsi=coap2NGSI($req);
+	$ngsi=coap2NGSI_str($req);
 	/*Response*/
 	$http_response=send2NGSI($ngsi);
-	
+	var_dump($http_response);
 	$ack=array();
 	$ack['next_push']=(POST_TIME*60)-(time()%(POST_TIME*60));
 	$ack['act']=[];
