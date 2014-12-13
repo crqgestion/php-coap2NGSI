@@ -28,14 +28,13 @@ function data2atributes($data){
 	}
 	return json_encode($atributes);
 }
-function Options2ID($opts){
-	$id_opt=(end($opts));
-	return ($id_opt->getValue());
+function Options2ID($opts){	
+	$id_opt=( end( explode('/',$opts) ) );
+	return (intval($id_opt));
 }
-function coap2NGSI_str($coap_req){
-	$_ngsi=json_decode($coap_req->getPayload());
-	$atributes=data2atributes($_ngsi->data);
-	$id=Options2ID($coap_req->GetOptions());
+function coap2NGSI_str($coap_req,$uri){
+	$atributes=data2atributes($coap_req->data);
+	$id=Options2ID($uri);
 	
 	$obj=("{
 		\"contextElements\": [
@@ -65,26 +64,20 @@ function send2NGSI ($data_str){
 	}
 	return ($response->json());
 }
+	$uri=($_SERVER['REQUEST_URI']);
+	$post = file_get_contents('php://input');
+	$ngsi=coap2NGSI_str(json_decode($post),$uri);
+	
 
-$loop = React\EventLoop\Factory::create();
-
-$server = new PhpCoap\Server\Server( $loop );
-
-$server->receive( 5683, '[::]' );
-
-$server->on( 'request', function( $req, $res, $handler ) {
-	$ngsi=coap2NGSI_str($req);
 	/*Response*/
 	$http_response=send2NGSI($ngsi);
-	var_dump($http_response);
+
 	$ack=array();
 	$ack['next_push']=(POST_TIME*60)-(time()%(POST_TIME*60));
 	$ack['act']=[];
 	
-	$res->setPayload( json_encode( $ack ));
-	$handler->send( $res );
-});
+	
+	echo json_encode($ack);
 
-$loop->run();
 
 ?>
